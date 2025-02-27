@@ -37,13 +37,17 @@ renderer.shadowMap.enabled = true
 document.body.appendChild(renderer.domElement)
 
 // Lighting
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.3)
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
 scene.add(ambientLight)
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5)
-directionalLight.position.set(5, 5, 5)
+const directionalLight = new THREE.DirectionalLight(0xffffff, 3)
+directionalLight.position.set(100, 100, 100)
 directionalLight.castShadow = true
 scene.add(directionalLight)
+
+// Add hemisphere light for better ambient illumination
+const hemisphereLight = new THREE.HemisphereLight(0xffffbb, 0x080820, 1)
+scene.add(hemisphereLight)
 
 // Создание солнца с реалистичной текстурой и свечением
 const sunGeometry = new THREE.SphereGeometry(50, 64, 64)
@@ -75,19 +79,19 @@ function createOrbitLine(radius) {
     }
     
     orbitGeometry.setAttribute('position', new THREE.Float32BufferAttribute(points, 3));
-    const orbitMaterial = new THREE.LineBasicMaterial({ color: 0x444444, transparent: true, opacity: 0.3 });
+    const orbitMaterial = new THREE.LineBasicMaterial({ color: 0x666666, transparent: true, opacity: 0.8, linewidth: 2 });
     return new THREE.Line(orbitGeometry, orbitMaterial);
 }
 
 const planetData = [
     { name: 'mercury', size: 3.8, orbit: 80, speed: 0.004, texturePath: 'textures/mercury.jpg' },
-    { name: 'venus', size: 9.5, orbit: 120, speed: 0.0035, texturePath: 'textures/Venus.jpg' },
-    { name: 'earth', size: 10, orbit: 160, speed: 0.003, texturePath: 'textures/earth.jpg' },
-    { name: 'mars', size: 5.3, orbit: 200, speed: 0.0025, texturePath: 'textures/mars.jpg' },
-    { name: 'jupiter', size: 30, orbit: 300, speed: 0.002, texturePath: 'textures/jupiter.jpg' },
-    { name: 'saturn', size: 25, orbit: 350, speed: 0.0015, texturePath: 'textures/saturn.jpg' },
-    { name: 'uranus', size: 15, orbit: 400, speed: 0.001, texturePath: 'textures/uranus.jpg' },
-    { name: 'neptune', size: 15, orbit: 450, speed: 0.0008, texturePath: 'textures/neptune.jpg' }
+    { name: 'venus', size: 9.5, orbit: 110, speed: 0.0035, texturePath: 'textures/Venus.jpg' },
+    { name: 'earth', size: 10, orbit: 150, speed: 0.003, texturePath: 'textures/earth.jpg' },
+    { name: 'mars', size: 5.3, orbit: 190, speed: 0.0025, texturePath: 'textures/mars.jpg' },
+    { name: 'jupiter', size: 25, orbit: 280, speed: 0.002, texturePath: 'textures/jupiter.jpg' },
+    { name: 'saturn', size: 20, orbit: 340, speed: 0.0015, texturePath: 'textures/saturn.jpg' },
+    { name: 'uranus', size: 15, orbit: 390, speed: 0.001, texturePath: 'textures/uranus.jpg' },
+    { name: 'neptune', size: 14, orbit: 440, speed: 0.0008, texturePath: 'textures/neptune.jpg' }
 ]
 
 planetData.forEach(data => {
@@ -109,6 +113,10 @@ planetData.forEach(data => {
     planet.userData.orbitRadius = data.orbit
     planet.userData.angle = Math.random() * Math.PI * 2
     planet.userData.speed = data.speed
+    
+    // Add orbit line
+    const orbitLine = createOrbitLine(data.orbit)
+    scene.add(orbitLine)
     
     planets.push(planet)
     scene.add(planet)
@@ -134,9 +142,51 @@ function animate() {
     })
 
     // Rotate camera around the scene
-    const time = Date.now() * 0.0001
-    camera.position.x = Math.cos(time) * 400
-    camera.position.z = Math.sin(time) * 400
+    const time = Date.now() * 0.00005
+    camera.position.x = Math.cos(time) * 600
+    camera.position.y = 200
+    camera.position.z = Math.sin(time) * 600
+    camera.lookAt(scene.position)
+
+    // Adjust camera settings for better view
+    camera.position.set(0, 300, 800)
+    camera.lookAt(0, 0, 0)
+
+    // Update camera animation
+    function animate() {
+        requestAnimationFrame(animate)
+        
+        // Rotate sun
+        sun.rotation.y += 0.002
+        
+        // Update planets
+        planets.forEach(planet => {
+            planet.userData.angle += planet.userData.speed
+            
+            // Update planet position
+            planet.position.x = Math.cos(planet.userData.angle) * planet.userData.orbitRadius
+            planet.position.z = Math.sin(planet.userData.angle) * planet.userData.orbitRadius
+            
+            // Rotate planet
+            planet.rotation.y += 0.01
+        })
+        
+        // Smoother camera movement
+        const time = Date.now() * 0.00003
+        camera.position.x = Math.cos(time) * 1000
+        camera.position.y = 250 + Math.sin(time * 0.5) * 50
+        camera.position.z = Math.sin(time) * 1000
+        camera.lookAt(scene.position)
+        
+        TWEEN.update()
+        renderer.render(scene, camera)
+    }
+
+    // Rotate camera around the scene
+    const time = Date.now() * 0.00005
+    camera.position.x = Math.cos(time) * 600
+    camera.position.y = 200
+    camera.position.z = Math.sin(time) * 600
     camera.lookAt(scene.position)
 
     TWEEN.update()
