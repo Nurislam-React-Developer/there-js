@@ -2,13 +2,32 @@ import './style.css'
 import * as THREE from 'three'
 import TWEEN from '@tweenjs/tween.js'
 
+// Загрузчик текстур
+const textureLoader = new THREE.TextureLoader()
+
 // Scene initialization
 const scene = new THREE.Scene()
-scene.background = new THREE.Color(0x87ceeb) // Sky blue background
+scene.background = new THREE.Color(0x000000) // Space background
+
+// Add stars
+const starsGeometry = new THREE.BufferGeometry()
+const starsMaterial = new THREE.PointsMaterial({ color: 0xFFFFFF, size: 0.1 })
+
+const starsVertices = []
+for(let i = 0; i < 10000; i++) {
+    const x = (Math.random() - 0.5) * 2000
+    const y = (Math.random() - 0.5) * 2000
+    const z = (Math.random() - 0.5) * 2000
+    starsVertices.push(x, y, z)
+}
+
+starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starsVertices, 3))
+const starField = new THREE.Points(starsGeometry, starsMaterial)
+scene.add(starField)
 
 // Camera setup
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
-camera.position.set(0, 5, 10)
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000)
+camera.position.set(0, 100, 300)
 camera.lookAt(0, 0, 0)
 
 // Renderer setup
@@ -18,115 +37,107 @@ renderer.shadowMap.enabled = true
 document.body.appendChild(renderer.domElement)
 
 // Lighting
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.3)
 scene.add(ambientLight)
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1)
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5)
 directionalLight.position.set(5, 5, 5)
 directionalLight.castShadow = true
 scene.add(directionalLight)
 
-// Ground
-const groundGeometry = new THREE.PlaneGeometry(100, 100)
-const groundMaterial = new THREE.MeshStandardMaterial({ 
-    color: 0x1e824c,
-    roughness: 0.8,
-    metalness: 0.2
+// Создание солнца с реалистичной текстурой и свечением
+const sunGeometry = new THREE.SphereGeometry(50, 64, 64)
+const sunTexture = textureLoader.load('textures/sun.jpg')
+const sunMaterial = new THREE.MeshBasicMaterial({
+    map: sunTexture,
+    emissive: 0xffff00,
+    emissiveIntensity: 2
 })
-const ground = new THREE.Mesh(groundGeometry, groundMaterial)
-ground.rotation.x = -Math.PI / 2
-ground.receiveShadow = true
-scene.add(ground)
 
-// Car creation
-const car = new THREE.Group()
+// Добавляем свечение вокруг солнца
+const sunLight = new THREE.PointLight(0xffffff, 2, 1000)
+sunLight.position.set(0, 0, 0)
+scene.add(sunLight)
+const sun = new THREE.Mesh(sunGeometry, sunMaterial)
+scene.add(sun)
 
-// Car body
-const bodyGeometry = new THREE.BoxGeometry(2, 1, 4)
-const bodyMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000 })
-const carBody = new THREE.Mesh(bodyGeometry, bodyMaterial)
-carBody.position.y = 1
-carBody.castShadow = true
-car.add(carBody)
+// Создание планет
+const planets = []
+// Create orbit lines
+function createOrbitLine(radius) {
+    const segments = 128;
+    const orbitGeometry = new THREE.BufferGeometry();
+    const points = [];
+    
+    for (let i = 0; i <= segments; i++) {
+        const theta = (i / segments) * Math.PI * 2;
+        points.push(Math.cos(theta) * radius, 0, Math.sin(theta) * radius);
+    }
+    
+    orbitGeometry.setAttribute('position', new THREE.Float32BufferAttribute(points, 3));
+    const orbitMaterial = new THREE.LineBasicMaterial({ color: 0x444444, transparent: true, opacity: 0.3 });
+    return new THREE.Line(orbitGeometry, orbitMaterial);
+}
 
-// Wheels
-const wheelGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.4, 32)
-const wheelMaterial = new THREE.MeshPhongMaterial({ color: 0x333333 })
-
-const wheels = [
-    { x: -1, y: 0.4, z: 1.5 },
-    { x: 1, y: 0.4, z: 1.5 },
-    { x: -1, y: 0.4, z: -1.5 },
-    { x: 1, y: 0.4, z: -1.5 }
+const planetData = [
+    { name: 'mercury', size: 3.8, orbit: 80, speed: 0.004, texturePath: 'textures/mercury.jpg' },
+    { name: 'venus', size: 9.5, orbit: 120, speed: 0.0035, texturePath: 'textures/Venus.jpg' },
+    { name: 'earth', size: 10, orbit: 160, speed: 0.003, texturePath: 'textures/earth.jpg' },
+    { name: 'mars', size: 5.3, orbit: 200, speed: 0.0025, texturePath: 'textures/mars.jpg' },
+    { name: 'jupiter', size: 30, orbit: 300, speed: 0.002, texturePath: 'textures/jupiter.jpg' },
+    { name: 'saturn', size: 25, orbit: 350, speed: 0.0015, texturePath: 'textures/saturn.jpg' },
+    { name: 'uranus', size: 15, orbit: 400, speed: 0.001, texturePath: 'textures/uranus.jpg' },
+    { name: 'neptune', size: 15, orbit: 450, speed: 0.0008, texturePath: 'textures/neptune.jpg' }
 ]
 
-wheels.forEach(pos => {
-    const wheel = new THREE.Mesh(wheelGeometry, wheelMaterial)
-    wheel.position.set(pos.x, pos.y, pos.z)
-    wheel.rotation.z = Math.PI / 2
-    wheel.castShadow = true
-    car.add(wheel)
-})
-
-scene.add(car)
-
-// Car movement variables
-const carState = {
-    speed: 0,
-    rotation: 0,
-    acceleration: 0.005,
-    deceleration: 0.0025,
-    maxSpeed: 0.3,
-    rotationSpeed: 0.03
-}
-
-// Keyboard controls
-const keys = {
-    ArrowUp: false,
-    ArrowDown: false,
-    ArrowLeft: false,
-    ArrowRight: false
-}
-
-window.addEventListener('keydown', (e) => {
-    if (keys.hasOwnProperty(e.key)) {
-        keys[e.key] = true
-    }
-})
-
-window.addEventListener('keyup', (e) => {
-    if (keys.hasOwnProperty(e.key)) {
-        keys[e.key] = false
-    }
+planetData.forEach(data => {
+    const planetGeometry = new THREE.SphereGeometry(data.size, 32, 32)
+    const planetTexture = textureLoader.load(data.texturePath)
+    const planetMaterial = new THREE.MeshStandardMaterial({
+        map: planetTexture,
+        metalness: 0,
+        roughness: 0.8
+    })
+    const planet = new THREE.Mesh(planetGeometry, planetMaterial)
+    
+    // Установка начальной позиции
+    planet.position.x = data.orbit
+    planet.position.y = 0
+    planet.position.z = 0
+    
+    // Сохранение параметров орбиты
+    planet.userData.orbitRadius = data.orbit
+    planet.userData.angle = Math.random() * Math.PI * 2
+    planet.userData.speed = data.speed
+    
+    planets.push(planet)
+    scene.add(planet)
 })
 
 // Animation
 function animate() {
     requestAnimationFrame(animate)
 
-    // Update car movement
-    if (keys.ArrowUp) {
-        carState.speed = Math.min(carState.speed + carState.acceleration, carState.maxSpeed)
-    } else if (keys.ArrowDown) {
-        carState.speed = Math.max(carState.speed - carState.acceleration, -carState.maxSpeed)
-    } else {
-        carState.speed *= 0.95 // Natural slowdown
-    }
+    // Rotate sun
+    sun.rotation.y += 0.002
 
-    if (Math.abs(carState.speed) > 0.001) {
-        if (keys.ArrowLeft) carState.rotation += carState.rotationSpeed
-        if (keys.ArrowRight) carState.rotation -= carState.rotationSpeed
-    }
+    // Update planets
+    planets.forEach(planet => {
+        planet.userData.angle += planet.userData.speed
+        
+        // Update planet position
+        planet.position.x = Math.cos(planet.userData.angle) * planet.userData.orbitRadius
+        planet.position.z = Math.sin(planet.userData.angle) * planet.userData.orbitRadius
+        
+        // Rotate planet
+        planet.rotation.y += 0.01
+    })
 
-    // Apply movement
-    car.position.x += Math.sin(carState.rotation) * carState.speed
-    car.position.z += Math.cos(carState.rotation) * carState.speed
-    car.rotation.y = carState.rotation
-
-    // Update camera position
-    const cameraOffset = new THREE.Vector3(-Math.sin(carState.rotation) * 10, 5, -Math.cos(carState.rotation) * 10)
-    camera.position.copy(car.position).add(cameraOffset)
-    camera.lookAt(car.position)
+    // Rotate camera around the scene
+    const time = Date.now() * 0.0001
+    camera.position.x = Math.cos(time) * 400
+    camera.position.z = Math.sin(time) * 400
+    camera.lookAt(scene.position)
 
     TWEEN.update()
     renderer.render(scene, camera)
