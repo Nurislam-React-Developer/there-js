@@ -47,16 +47,25 @@ controls.maxDistance = 1000 // Maximum zoom distance
 controls.maxPolarAngle = Math.PI // Limit vertical rotation
 
 // Lighting
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
+const ambientLight = new THREE.AmbientLight(0xffffff, 2.5)
 scene.add(ambientLight)
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 3)
-directionalLight.position.set(100, 100, 100)
+const directionalLight = new THREE.DirectionalLight(0xffffff, 5)
+directionalLight.position.set(0, 200, 200)
 directionalLight.castShadow = true
 scene.add(directionalLight)
 
+// Add additional directional lights for better coverage
+const directionalLight2 = new THREE.DirectionalLight(0xffffff, 4)
+directionalLight2.position.set(-200, 0, -200)
+scene.add(directionalLight2)
+
+const directionalLight3 = new THREE.DirectionalLight(0xffffff, 4)
+directionalLight3.position.set(200, -200, -200)
+scene.add(directionalLight3)
+
 // Add hemisphere light for better ambient illumination
-const hemisphereLight = new THREE.HemisphereLight(0xffffbb, 0x080820, 1)
+const hemisphereLight = new THREE.HemisphereLight(0xffffbb, 0x080820, 1.75)
 scene.add(hemisphereLight)
 
 // Создание солнца с реалистичной текстурой и свечением
@@ -65,11 +74,11 @@ const sunTexture = textureLoader.load('textures/sun.jpg')
 const sunMaterial = new THREE.MeshBasicMaterial({
     map: sunTexture,
     emissive: 0xffff00,
-    emissiveIntensity: 2
+    emissiveIntensity: 3
 })
 
 // Добавляем свечение вокруг солнца
-const sunLight = new THREE.PointLight(0xffffff, 2, 1000)
+const sunLight = new THREE.PointLight(0xffffff, 3, 1000)
 sunLight.position.set(0, 0, 0)
 scene.add(sunLight)
 const sun = new THREE.Mesh(sunGeometry, sunMaterial)
@@ -110,7 +119,9 @@ planetData.forEach(data => {
     const planetMaterial = new THREE.MeshStandardMaterial({
         map: planetTexture,
         metalness: 0,
-        roughness: 0.8
+        roughness: 0.3,
+        emissive: 0x111111,
+        emissiveIntensity: 0.1
     })
     const planet = new THREE.Mesh(planetGeometry, planetMaterial)
     
