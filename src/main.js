@@ -141,52 +141,11 @@ function animate() {
         planet.rotation.y += 0.01
     })
 
-    // Rotate camera around the scene
-    const time = Date.now() * 0.00005
-    camera.position.x = Math.cos(time) * 600
-    camera.position.y = 200
-    camera.position.z = Math.sin(time) * 600
-    camera.lookAt(scene.position)
-
-    // Adjust camera settings for better view
-    camera.position.set(0, 300, 800)
-    camera.lookAt(0, 0, 0)
-
-    // Update camera animation
-    function animate() {
-        requestAnimationFrame(animate)
-        
-        // Rotate sun
-        sun.rotation.y += 0.002
-        
-        // Update planets
-        planets.forEach(planet => {
-            planet.userData.angle += planet.userData.speed
-            
-            // Update planet position
-            planet.position.x = Math.cos(planet.userData.angle) * planet.userData.orbitRadius
-            planet.position.z = Math.sin(planet.userData.angle) * planet.userData.orbitRadius
-            
-            // Rotate planet
-            planet.rotation.y += 0.01
-        })
-        
-        // Smoother camera movement
-        const time = Date.now() * 0.00003
-        camera.position.x = Math.cos(time) * 1000
-        camera.position.y = 250 + Math.sin(time * 0.5) * 50
-        camera.position.z = Math.sin(time) * 1000
-        camera.lookAt(scene.position)
-        
-        TWEEN.update()
-        renderer.render(scene, camera)
-    }
-
-    // Rotate camera around the scene
-    const time = Date.now() * 0.00005
-    camera.position.x = Math.cos(time) * 600
-    camera.position.y = 200
-    camera.position.z = Math.sin(time) * 600
+    // Smoother camera movement
+    const time = Date.now() * 0.00003
+    camera.position.x = Math.cos(time) * 1000
+    camera.position.y = 250 + Math.sin(time * 0.5) * 50
+    camera.position.z = Math.sin(time) * 1000
     camera.lookAt(scene.position)
 
     TWEEN.update()
