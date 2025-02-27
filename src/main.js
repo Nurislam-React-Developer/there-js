@@ -1,5 +1,6 @@
 import './style.css'
 import * as THREE from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import TWEEN from '@tweenjs/tween.js'
 
 // Загрузчик текстур
@@ -35,6 +36,15 @@ const renderer = new THREE.WebGLRenderer({ antialias: true })
 renderer.setSize(window.innerWidth, window.innerHeight)
 renderer.shadowMap.enabled = true
 document.body.appendChild(renderer.domElement)
+
+// Add OrbitControls
+const controls = new OrbitControls(camera, renderer.domElement)
+controls.enableDamping = true // Add smooth damping effect
+controls.dampingFactor = 0.05
+controls.screenSpacePanning = false
+controls.minDistance = 100 // Minimum zoom distance
+controls.maxDistance = 1000 // Maximum zoom distance
+controls.maxPolarAngle = Math.PI // Limit vertical rotation
 
 // Lighting
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
@@ -141,12 +151,8 @@ function animate() {
         planet.rotation.y += 0.01
     })
 
-    // Smoother camera movement
-    const time = Date.now() * 0.00003
-    camera.position.x = Math.cos(time) * 1000
-    camera.position.y = 250 + Math.sin(time * 0.5) * 50
-    camera.position.z = Math.sin(time) * 1000
-    camera.lookAt(scene.position)
+    // Update controls
+    controls.update()
 
     TWEEN.update()
     renderer.render(scene, camera)
@@ -161,6 +167,26 @@ window.addEventListener('resize', () => {
     camera.updateProjectionMatrix()
     
     renderer.setSize(width, height)
+})
+
+// Touch event handlers for mobile devices
+let touchStartX = 0
+let touchStartY = 0
+
+document.addEventListener('touchstart', (event) => {
+    touchStartX = event.touches[0].clientX
+    touchStartY = event.touches[0].clientY
+})
+
+document.addEventListener('touchmove', (event) => {
+    event.preventDefault()
+    const touchX = event.touches[0].clientX
+    const touchY = event.touches[0].clientY
+    const deltaX = touchX - touchStartX
+    const deltaY = touchY - touchStartY
+    
+    touchStartX = touchX
+    touchStartY = touchY
 })
 
 // Start animation
