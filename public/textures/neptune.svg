@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="neptuneGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+      <stop offset="0%" stop-color="#5b8cff" />
+      <stop offset="20%" stop-color="#4a7ae6" />
+      <stop offset="40%" stop-color="#3a68cc" />
+      <stop offset="60%" stop-color="#2a56b3" />
+      <stop offset="80%" stop-color="#1a4499" />
+      <stop offset="100%" stop-color="#0a3280" />
+    </radialGradient>
+    <filter id="noise" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.4" numOctaves="3" stitchTiles="stitch" result="noise"/>
+      <feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.5 0" in="noise" result="coloredNoise"/>
+      <feComposite operator="in" in="coloredNoise" in2="SourceGraphic" result="noisyTexture"/>
+    </filter>
+  </defs>
+  <circle cx="256" cy="256" r="250" fill="url(#neptuneGradient)" filter="url(#noise)"/>
+  
+  <!-- Cloud bands -->
+  <path d="M50,180 Q128,160 256,180 T462,180" stroke="#6b9cff" stroke-width="20" fill="none" opacity="0.3" />
+  <path d="M50,220 Q128,240 256,220 T462,220" stroke="#6b9cff" stroke-width="15" fill="none" opacity="0.2" />
+  <path d="M50,260 Q128,240 256,260 T462,260" stroke="#6b9cff" stroke-width="25" fill="none" opacity="0.3" />
+  <path d="M50,300 Q128,320 256,300 T462,300" stroke="#6b9cff" stroke-width="18" fill="none" opacity="0.2" />
+  <path d="M50,340 Q128,320 256,340 T462,340" stroke="#6b9cff" stroke-width="22" fill="none" opacity="0.3" />
+  
+  <!-- Great Dark Spot -->
+  <ellipse cx="200" cy="200" rx="60" ry="40" fill="#0a2060" opacity="0.7" transform="rotate(-15,200,200)" />
+  
+  <!-- Smaller storms -->
+  <circle cx="350" cy="280" r="25" fill="#0a2060" opacity="0.5" />
+  <circle cx="150" cy="350" r="20" fill="#0a2060" opacity="0.6" />
+  <circle cx="300" cy="150" r="15" fill="#0a2060" opacity="0.5" />
+</svg>

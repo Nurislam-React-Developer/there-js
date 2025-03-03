@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="oceanGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#006994;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#003366;stop-opacity:1" />
+    </radialGradient>
+    <pattern id="landPattern" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M30,5 Q45,15 35,25 T40,35 Q25,45 30,55" fill="none" stroke="#228B22" stroke-width="8" />
+      <path d="M10,15 Q25,25 15,35 T20,45" fill="none" stroke="#228B22" stroke-width="8" />
+      <path d="M50,25 Q35,35 45,45" fill="none" stroke="#228B22" stroke-width="8" />
+    </pattern>
+    <filter id="atmosphereGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="5" result="glow" />
+      <feComposite in="glow" in2="SourceGraphic" operator="over" />
+    </filter>
+  </defs>
+  <circle cx="256" cy="256" r="200" fill="url(#oceanGradient)" />
+  <circle cx="256" cy="256" r="200" fill="url(#landPattern)" fill-opacity="0.7" />
+  <circle cx="256" cy="256" r="205" fill="none" stroke="#87CEEB" stroke-width="5" filter="url(#atmosphereGlow)" opacity="0.5" />
+</svg>

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="mercuryGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+      <stop offset="0%" stop-color="#e5e5e5" />
+      <stop offset="20%" stop-color="#d1d1d1" />
+      <stop offset="40%" stop-color="#b8b8b8" />
+      <stop offset="60%" stop-color="#a0a0a0" />
+      <stop offset="80%" stop-color="#909090" />
+      <stop offset="100%" stop-color="#808080" />
+    </radialGradient>
+    <filter id="noise" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" result="noise"/>
+      <feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.5 0" in="noise" result="coloredNoise"/>
+      <feComposite operator="in" in="coloredNoise" in2="SourceGraphic" result="noisyTexture"/>
+    </filter>
+  </defs>
+  <circle cx="256" cy="256" r="250" fill="url(#mercuryGradient)" filter="url(#noise)"/>
+  
+  <!-- Craters -->
+  <circle cx="150" cy="180" r="30" fill="#707070" opacity="0.6" />
+  <circle cx="320" cy="220" r="40" fill="#707070" opacity="0.5" />
+  <circle cx="200" cy="350" r="25" fill="#707070" opacity="0.7" />
+  <circle cx="380" cy="120" r="20" fill="#707070" opacity="0.6" />
+  <circle cx="100" cy="280" r="35" fill="#707070" opacity="0.5" />
+  <circle cx="280" cy="380" r="30" fill="#707070" opacity="0.6" />
+  
+  <!-- Surface details -->
+  <path d="M120,150 Q180,100 240,160 T380,200" stroke="#909090" stroke-width="5" fill="none" opacity="0.3" />
+  <path d="M80,250 Q150,200 220,280 T400,300" stroke="#909090" stroke-width="4" fill="none" opacity="0.3" />
+  <path d="M150,350 Q220,300 280,340 T380,320" stroke="#909090" stroke-width="6" fill="none" opacity="0.3" />
+</svg>

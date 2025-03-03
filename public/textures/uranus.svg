@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="uranusGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+      <stop offset="0%" stop-color="#d1f1ff" />
+      <stop offset="20%" stop-color="#b0e6fa" />
+      <stop offset="40%" stop-color="#8fd9f0" />
+      <stop offset="60%" stop-color="#6ecce6" />
+      <stop offset="80%" stop-color="#4dbfdc" />
+      <stop offset="100%" stop-color="#2cb2d2" />
+    </radialGradient>
+    <filter id="noise" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="3" stitchTiles="stitch" result="noise"/>
+      <feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.5 0" in="noise" result="coloredNoise"/>
+      <feComposite operator="in" in="coloredNoise" in2="SourceGraphic" result="noisyTexture"/>
+    </filter>
+  </defs>
+  <circle cx="256" cy="256" r="250" fill="url(#uranusGradient)" filter="url(#noise)"/>
+  
+  <!-- Cloud bands -->
+  <path d="M50,150 Q128,140 256,150 T462,150" stroke="#a0e0f0" stroke-width="15" fill="none" opacity="0.2" />
+  <path d="M50,200 Q128,210 256,200 T462,200" stroke="#a0e0f0" stroke-width="20" fill="none" opacity="0.2" />
+  <path d="M50,250 Q128,240 256,250 T462,250" stroke="#a0e0f0" stroke-width="18" fill="none" opacity="0.2" />
+  <path d="M50,300 Q128,310 256,300 T462,300" stroke="#a0e0f0" stroke-width="22" fill="none" opacity="0.2" />
+  <path d="M50,350 Q128,340 256,350 T462,350" stroke="#a0e0f0" stroke-width="16" fill="none" opacity="0.2" />
+  
+  <!-- Atmospheric features -->
+  <circle cx="180" cy="180" r="20" fill="#80d0e0" opacity="0.4" />
+  <circle cx="320" cy="240" r="25" fill="#80d0e0" opacity="0.3" />
+  <circle cx="220" cy="320" r="15" fill="#80d0e0" opacity="0.4" />
+  <circle cx="380" cy="350" r="18" fill="#80d0e0" opacity="0.3" />
+  
+  <!-- Subtle polar cap -->
+  <ellipse cx="256" cy="50" rx="200" ry="40" fill="#ffffff" opacity="0.2" />
+  <ellipse cx="256" cy="462" rx="200" ry="40" fill="#ffffff" opacity="0.2" />
+</svg>
